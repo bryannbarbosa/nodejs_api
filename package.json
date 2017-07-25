@@ -1,0 +1,17 @@
+{
+  "name": "node-api",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "jsonwebtoken": "^7.4.1",
+    "mysql": "^2.13.0",
+    "nodemon": "^1.11.0",
+    "stringinject": "^2.0.2"
+  }
+}
