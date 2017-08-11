@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 // Routes
 
@@ -13,6 +14,7 @@ const routes = [
 
 // Setup our app
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 // Inserting routes with loop
 routes.map(route => app.use('/api', route));
@@ -25,13 +27,6 @@ app.use(function(err, req, res, next) {
         message: err.message,
         error: {response: 'This is an error'}
   });
-});
-
-app.use(function(req, res, next){
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
 });
 
 app.get('/', (req, res) => {
