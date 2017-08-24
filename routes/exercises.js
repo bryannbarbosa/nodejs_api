@@ -25,6 +25,49 @@ router.get('/exercises', ensureToken, (req, res) => {
   });
 });
 
+router.post('/exercises', ensureToken, (req, res) => {
+
+  jwt.verify(req.token, 'bobesponja63', (err, data) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      if ('id_category', 'exercise_name' in req.body) {
+        connection.connect((err) => {
+          let exercise = req.body.exercise_name;
+          let query = "select * from exercises where exercise_name = " + mysql.escape(exercise) + " limit 1";
+          connection.query(query, (err, result, fields) => {
+            if (err)
+              throw err;
+            if (result.length > 0) {
+              res.json({response: 'This exercise already exists'});
+            } else {
+              connection.connect((err) => {
+                let category_id = req.body.id_category;
+                let exercise = req.body.exercise_name;
+                let values = [];
+                values.push(category_id, exercise);
+                let query = "insert into exercises (id_category, exercise_name) values (" + mysql.escape(values) + ")";
+                connection.query(query, (err, result, fields) => {
+                  if (err)
+                    throw err;
+                  res.json({
+                    response: {
+                      message: 'Exercise has created successfully!',
+                      id_exercise: result.insertId
+                    }
+                  });
+                });
+              });
+            }
+          });
+        });
+      } else {
+        res.json({response: 'category id and exercise name are required'});
+      }
+    }
+  });
+});
+
 router.get('/exercises/:id', ensureToken, (req, res) => {
   jwt.verify(req.token, 'bobesponja63', (err, data) => {
     if(err) {
