@@ -27,10 +27,7 @@ router.get('/categories', ensureToken, (req, res) => {
   });
 });
 
-
-
 router.post('/categories', ensureToken, (req, res) => {
-
   jwt.verify(req.token, 'bobesponja63', (err, data) => {
     if (err) {
       res.sendStatus(403);
@@ -69,6 +66,43 @@ router.post('/categories', ensureToken, (req, res) => {
       } else {
         res.json({response: 'category name and description is required'});
       }
+    }
+  });
+});
+
+router.put('/categories/:id', ensureToken, (req, res) => {
+  jwt.verify(req.token, 'bobesponja63', (err, data) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      if ('category_name' in req.body) {
+        connection.connect((err) => {
+          let category_name = req.body.category_name;
+          let id = req.params.id;
+          connection.query('update categories set category_name = ' + mysql.escape(category_name) + ' where id = ' + mysql.escape(id), (err, result, fields) => {
+            if (err)
+              throw err;
+            res.json({response: 'Category updated sucessfully!'});
+          });
+        });
+      }
+    }
+  });
+});
+
+router.delete('/categories/:id', ensureToken, (req, res) => {
+  jwt.verify(req.token, 'bobesponja63', (err, data) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      connection.connect((err) => {
+        let id = req.params.id;
+        connection.query('delete from categories where id = ' + mysql.escape(id), (err, result, fields) => {
+          if (err)
+            throw err;
+          res.json({response: 'Category deleted sucessfully!'});
+        });
+      });
     }
   });
 });

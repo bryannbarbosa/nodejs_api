@@ -68,6 +68,26 @@ router.post('/exercises', ensureToken, (req, res) => {
   });
 });
 
+router.put('/exercises/:id', ensureToken, (req, res) => {
+  jwt.verify(req.token, 'bobesponja63', (err, data) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      if ('exercise_name' in req.body) {
+        connection.connect((err) => {
+          let exercise = req.body.exercise_name;
+          let id = req.params.id;
+          connection.query('update exercises set exercise_name = ' + mysql.escape(exerc) + ' where id = ' + mysql.escape(id), (err, result, fields) => {
+            if (err)
+              throw err;
+            res.json({response: 'Exercise updated sucessfully!'});
+          });
+        });
+      }
+    }
+  });
+});
+
 router.get('/exercises/:id', ensureToken, (req, res) => {
   jwt.verify(req.token, 'bobesponja63', (err, data) => {
     if(err) {
