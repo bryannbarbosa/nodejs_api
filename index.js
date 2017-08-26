@@ -16,6 +16,7 @@ const routes = [
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use("/uploads/images", express.static(__dirname + '/uploads/images'));
 // Inserting routes with loop
 routes.map(route => app.use('/api', route));
 

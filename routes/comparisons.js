@@ -37,7 +37,7 @@ router.post('/comparisons', upload.single('file'), ensureToken, (req, res) => {
       if (!req.file) {
         return res.json({success: false, error_code: 1});
       } else {
-        let image = req.protocol + '://' + req.get('host') + '/api/' + req.file.path;
+        let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
         let comparison_content = req.body.comparison.comparison_content;
         let exercise_id = req.body.comparison.exercise_id.id;
         let values = [];
