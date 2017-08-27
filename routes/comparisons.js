@@ -14,7 +14,7 @@ router.get('/comparisons', ensureToken, (req, res) => {
       res.sendStatus(403);
     } else {
       connection.connect((err) => {
-        connection.query('select * from comparisons', (err, result, fields) => {
+        connection.query('select comparisons.id as id, comparisons.comparison_content, comparisons.image_comparison_url, exercises.exercise_name, categories.category_name from ((comparisons inner join exercises on exercises.id = comparisons.id_exercise) inner join categories on exercises.id_category = categories.id)', (err, result, fields) => {
           if (err)
             throw err;
           res.json({
@@ -58,6 +58,68 @@ router.post('/comparisons', upload.single('file'), ensureToken, (req, res) => {
           });
         });
       }
+    }
+  });
+});
+
+router.put('/comparisons/:id', upload.single('file'), ensureToken, (req, res) => {
+  jwt.verify(req.token, 'bobesponja63', (err, data) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      if (!req.file) {
+        let id = req.params.id;
+        let comparison_content = req.body.comparison_content;
+        let query = "update comparisons set comparison_content = " + mysql.escape(comparison_content) + " where id = " + mysql.escape(id);
+        connection.connect((err) => {
+          connection.query(query, (err, result, fields) => {
+            if (err)
+              throw err;
+            res.json({
+              response: {
+                message: 'Comparison has updated successfully!',
+                sucess: true,
+                error_code: 0
+              }
+            });
+          });
+        });
+      } else {
+        let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
+        let id = req.params.id;
+        let comparison_content = req.body.comparison_content;
+        let query = "update comparisons set image_comparison_url = " + mysql.escape(image) + ", comparison_content = " + mysql.escape(comparison_content) + " where id = " + mysql.escape(id);
+        connection.connect((err) => {
+          connection.query(query, (err, result, fields) => {
+            if (err)
+              throw err;
+            res.json({
+              response: {
+                message: 'Comparison has updated successfully!',
+                sucess: true,
+                error_code: 0
+              }
+            });
+          });
+        });
+      }
+    }
+  });
+});
+
+router.delete('/comparisons/:id', ensureToken, (req, res) => {
+  jwt.verify(req.token, 'bobesponja63', (err, data) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      connection.connect((err) => {
+        let id = req.params.id;
+        connection.query('delete from comparisons where id = ' + mysql.escape(id), (err, result, fields) => {
+          if (err)
+            throw err;
+          res.json({response: 'Comparison deleted sucessfully!'});
+        });
+      });
     }
   });
 });

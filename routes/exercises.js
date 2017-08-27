@@ -11,7 +11,7 @@ router.get('/exercises', ensureToken, (req, res) => {
       res.sendStatus(403);
     } else {
       connection.connect((err) => {
-        connection.query('select * from exercises', (err, result, fields) => {
+        connection.query('select exercises.id as id, categories.category_name, exercises.exercise_name from categories inner join exercises on categories.id = exercises.id_category', (err, result, fields) => {
           if(err) throw err;
           res.json({
             response: {
