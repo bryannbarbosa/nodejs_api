@@ -38,41 +38,32 @@ router.post('/steps', upload.single('file'), ensureToken, (req, res) => {
       if ('name', 'step_content', 'exercise_id' in req.body.step) {
         connection.connect((err) => {
           let step_name = req.body.step.name;
-          let query = "select * from steps where step_name = " + mysql.escape(step_name) + " limit 1";
-          connection.query(query, (err, result, fields) => {
-            if (err)
-              throw err;
-            if (result.length > 0) {
-              res.json({response: 'This step already exists'});
-            } else {
-              if (!req.file) {
-                return res.json({success: false, error_code: 1});
-              } else {
-                connection.connect((err) => {
-                  let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
-                  let exercise = req.body.step.exercise_id.id;
-                  let step_name = req.body.step.name;
-                  let image_step_url = image;
-                  let step_content = req.body.step.step_content;
-                  let values = [];
-                  values.push(exercise, step_name, image_step_url, step_content);
-                  let query = "insert into steps (id_exercise, step_name, image_step_url, step_content) values (" + mysql.escape(values) + ")";
-                  connection.query(query, (err, result, fields) => {
-                    if (err)
-                      throw err;
-                    res.json({
-                      response: {
-                        message: 'Step has created successfully!',
-                        id_step: result.insertId,
-                        sucess: true,
-                        error_code: 0
-                      }
-                    });
-                  });
+          if (!req.file) {
+            return res.json({success: false, error_code: 1});
+          } else {
+            connection.connect((err) => {
+              let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
+              let exercise = req.body.step.exercise_id.id;
+              let step_name = req.body.step.name;
+              let image_step_url = image;
+              let step_content = req.body.step.step_content;
+              let values = [];
+              values.push(exercise, step_name, image_step_url, step_content);
+              let query = "insert into steps (id_exercise, step_name, image_step_url, step_content) values (" + mysql.escape(values) + ")";
+              connection.query(query, (err, result, fields) => {
+                if (err)
+                  throw err;
+                res.json({
+                  response: {
+                    message: 'Step has created successfully!',
+                    id_step: result.insertId,
+                    sucess: true,
+                    error_code: 0
+                  }
                 });
-              }
-            }
-          });
+              });
+            });
+          }
         });
       } else {
         res.json({response: 'id of exercise, step name, step image and step content is required'});
