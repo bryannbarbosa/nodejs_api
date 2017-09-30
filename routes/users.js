@@ -18,10 +18,14 @@ router.post('/authentication', (req, res) => {
         if(result.length > 0) {
           const token = jwt.sign({id: result[0].id}, 'bobesponja63');
           res.json({
-            response: token
+            response: token,
+            success: true
           });
         } else {
-          res.json({response: 'Wrong email or password for authentication'})
+          res.json({
+            response: 'Wrong email or password for authentication',
+            success: false
+          })
         }
       });
     });
