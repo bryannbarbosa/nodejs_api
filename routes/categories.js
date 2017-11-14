@@ -32,7 +32,7 @@ router.post('/categories', ensureToken, (req, res) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      if ('category_name', 'description' in req.body) {
+      if ('category_name') {
         connection.connect((err) => {
           let category = req.body.category_name;
           let description = req.body.description;
@@ -45,10 +45,9 @@ router.post('/categories', ensureToken, (req, res) => {
             } else {
               connection.connect((err) => {
                 let category = req.body.category_name;
-                let description = req.body.description;
                 let values = [];
-                values.push(category, description);
-                let query = "insert into categories (category_name, category_description) values (" + mysql.escape(values) + ")";
+                values.push(category);
+                let query = "insert into categories (category_name) values (" + mysql.escape(values) + ")";
                 connection.query(query, (err, result, fields) => {
                   if (err)
                     throw err;
@@ -75,12 +74,12 @@ router.put('/categories/:id', ensureToken, (req, res) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      if ('category_name', 'category_description' in req.body) {
+      if ('category_name' in req.body) {
         connection.connect((err) => {
           let category_name = req.body.category_name;
           let category_description = req.body.category_description;
           let id = req.params.id;
-          connection.query('update categories set category_name = ' + mysql.escape(category_name) + ', category_description = ' + mysql.escape(category_description) + ' where id = ' + mysql.escape(id), (err, result, fields) => {
+          connection.query('update categories set category_name = ' + mysql.escape(category_name) + ' where id = ' + mysql.escape(id), (err, result, fields) => {
             if (err)
               throw err;
             res.json({response: 'Category updated sucessfully!'});
