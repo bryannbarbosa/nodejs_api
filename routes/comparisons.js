@@ -35,7 +35,10 @@ router.post('/comparisons', upload.single('file'), ensureToken, (req, res) => {
       res.sendStatus(403);
     } else {
       if (!req.file) {
-        return res.json({success: false, error_code: 1});
+        return res.json({
+          success: false,
+          error_code: 1
+        });
       } else {
         let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
         let comparison_content = req.body.comparison.comparison_content;
@@ -63,90 +66,92 @@ router.post('/comparisons', upload.single('file'), ensureToken, (req, res) => {
 });
 
 router.put('/comparisons/:id', upload.single('file'), ensureToken, (req, res) => {
-  jwt.verify(req.token, 'bobesponja63', (err, data) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      if(req.file) {
-	if(req.body.comparison_type == 'modify') {
-	  let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
-	  let id= req.params.id;
-	  let query = "update comparisons set image_comparison_modify =" + mysql.escape(image) + " where id = " + mysql.escape(id);
-	  connection.connect((err) => {
-	    connection.query(query, (err, result, fields) => {
-		if(err) {
-		  throw err;
-		}
-		res.json({
-		  response: {
-		    message: 'Comparison modify has updated successfully!',
-		    success: true,
-		    error_code: 0
-		  }
-		});
-	    });
-	  }
-	}
-        else {
-	let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
-        let id = req.params.id;
-        let query = "update comparisons set image_comparison_original = " + mysql.escape(image) + " where id = " + mysql.escape(id);
-        connection.connect((err) => {
-          connection.query(query, (err, result, fields) => {
-            if (err)
-              throw err;
-            res.json({
-              response: {
-                message: 'Comparison original has updated successfully!',
-                sucess: true,
-                error_code: 0
+      jwt.verify(req.token, 'bobesponja63', (err, data) => {
+          if (err) {
+            res.sendStatus(403);
+          } else {
+            if (req.file) {
+              if (req.body.comparison_type == 'modify') {
+                let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
+                let id = req.params.id;
+                let query = "update comparisons set image_comparison_modify =" + mysql.escape(image) + " where id = " + mysql.escape(id);
+                connection.connect((err) => {
+                    connection.query(query, (err, result, fields) => {
+                      if (err) {
+                        throw err;
+                      }
+                      res.json({
+                        response: {
+                          message: 'Comparison modify has updated successfully!',
+                          success: true,
+                          error_code: 0
+                        }
+                      });
+                    });
+                  }
+                }
+                else {
+                  let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
+                  let id = req.params.id;
+                  let query = "update comparisons set image_comparison_original = " + mysql.escape(image) + " where id = " + mysql.escape(id);
+                  connection.connect((err) => {
+                    connection.query(query, (err, result, fields) => {
+                      if (err)
+                        throw err;
+                      res.json({
+                        response: {
+                          message: 'Comparison original has updated successfully!',
+                          sucess: true,
+                          error_code: 0
+                        }
+                      });
+                    });
+                  });
+                }
               }
-            });
-          });
-        });
-      }
-    }
-  }
-  });
-});
-
-router.delete('/comparisons/:id', ensureToken, (req, res) => {
-  jwt.verify(req.token, 'bobesponja63', (err, data) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      connection.connect((err) => {
-        let id = req.params.id;
-        connection.query('delete from comparisons where id = ' + mysql.escape(id), (err, result, fields) => {
-          if (err)
-            throw err;
-          res.json({response: 'Comparison deleted sucessfully!'});
-        });
-      });
-    }
-  });
-});
-
-router.get('/comparisons/:id', ensureToken, (req, res) => {
-  jwt.verify(req.token, 'bobesponja63', (err, data) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      let id = req.params.id;
-      connection.connect((err) => {
-        connection.query('select * from comparisons where id = ' + mysql.escape(id), (err, result, fields) => {
-          if (err)
-            throw err;
-          res.json({
-            response: {
-              comparisons: result,
-              user: data
             }
           });
-        });
       });
-    }
-  });
-});
 
-module.exports = router;
+    router.delete('/comparisons/:id', ensureToken, (req, res) => {
+      jwt.verify(req.token, 'bobesponja63', (err, data) => {
+        if (err) {
+          res.sendStatus(403);
+        } else {
+          connection.connect((err) => {
+            let id = req.params.id;
+            connection.query('delete from comparisons where id = ' + mysql.escape(id), (err, result, fields) => {
+              if (err)
+                throw err;
+              res.json({
+                response: 'Comparison deleted sucessfully!'
+              });
+            });
+          });
+        }
+      });
+    });
+
+    router.get('/comparisons/:id', ensureToken, (req, res) => {
+      jwt.verify(req.token, 'bobesponja63', (err, data) => {
+        if (err) {
+          res.sendStatus(403);
+        } else {
+          let id = req.params.id;
+          connection.connect((err) => {
+            connection.query('select * from comparisons where id = ' + mysql.escape(id), (err, result, fields) => {
+              if (err)
+                throw err;
+              res.json({
+                response: {
+                  comparisons: result,
+                  user: data
+                }
+              });
+            });
+          });
+        }
+      });
+    });
+
+    module.exports = router;
