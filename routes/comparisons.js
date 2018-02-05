@@ -41,11 +41,11 @@ router.post('/comparisons', upload.single('file'), ensureToken, (req, res) => {
         });
       } else {
         let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
-        let comparison_content = req.body.comparison.comparison_content;
+        let image_default = 'https://cdn.pixabay.com/photo/2015/12/22/04/00/photo-1103595_960_720.png';
         let exercise_id = req.body.comparison.exercise_id.id;
         let values = [];
-        values.push(exercise_id, image, comparison_content);
-        let query = "insert into comparisons (id_exercise, image_comparison_url, comparison_content) values (" + mysql.escape(values) + ")";
+        values.push(exercise_id, image, image_default);
+        let query = "insert into comparisons (id_exercise, image_comparison_modify, image_comparison_original) values (" + mysql.escape(values) + ")";
         connection.connect((err) => {
           connection.query(query, (err, result, fields) => {
             if (err)
