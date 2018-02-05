@@ -77,7 +77,6 @@ router.put('/categories/:id', ensureToken, (req, res) => {
       if ('category_name' in req.body) {
         connection.connect((err) => {
           let category_name = req.body.category_name;
-          let category_description = req.body.category_description;
           let id = req.params.id;
           connection.query('update categories set category_name = ' + mysql.escape(category_name) + ' where id = ' + mysql.escape(id), (err, result, fields) => {
             if (err)
