@@ -76,20 +76,19 @@ router.put('/comparisons/:id', upload.single('file'), ensureToken, (req, res) =>
                 let id = req.params.id;
                 let query = "update comparisons set image_comparison_modify =" + mysql.escape(image) + " where id = " + mysql.escape(id);
                 connection.connect((err) => {
-                    connection.query(query, (err, result, fields) => {
-                      if (err) {
-                        throw err;
+                  connection.query(query, (err, result, fields) => {
+                    if (err)
+                      throw err;
+                    res.json({
+                      response: {
+                        message: 'Comparison modify has updated successfully!',
+                        sucess: true,
+                        error_code: 0
                       }
-                      res.json({
-                        response: {
-                          message: 'Comparison modify has updated successfully!',
-                          success: true,
-                          error_code: 0
-                        }
-                      });
                     });
-                  }
-                }
+                  });
+                });
+              }
                 else {
                   let image = req.protocol + '://' + req.get('host') + '/' + req.file.path;
                   let id = req.params.id;
